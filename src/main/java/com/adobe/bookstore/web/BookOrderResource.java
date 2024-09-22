@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/orders")
@@ -23,18 +25,35 @@ public class BookOrderResource {
         this.bookStockService = bookStockService;
     }
 
+    /**
+     * This endpoint is used for the "New orders processing" feature
+     */
     @PostMapping("/create")
-    public ResponseEntity<Order> createOrder(@RequestBody Order order){
-        // Check sufficiency of stock. If not, reject the order.
-        for(BookOrder bookOrder : order.getBooks()){
-            if(!bookStockService.isSufficientStock(bookOrder.getBookId(), bookOrder.getBookQuantity())){
-                return ResponseEntity.badRequest().body(null);
+    public ResponseEntity<Map<String, Object>> createOrder(@RequestBody Order order) {
+        Map<String, Object> response = new HashMap<>();
+
+        // Base case validation: check for empty orders
+        if (order.getBooks() == null || order.getBooks().isEmpty()) {
+            response.put("message", "The order cannot be empty");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // Check sufficiency of stock. If no enough stock is available, reject the order with a message.
+        for (BookOrder bookOrder : order.getBooks()) {
+            if (!bookStockService.isSufficientStock(bookOrder.getBookId(), bookOrder.getBookQuantity())) {
+                response.put("message", "Insufficient stock for book ID: " + bookOrder.getBookId());
+                return ResponseEntity.badRequest().body(response);
             }
         }
         // if we have enough quantity then we'll fulfill the order and update the stock;
         order.setOrderSuccess(true);
+        // Asynchronously update stock to avoid blocking replying to the customer.
         bookStockService.updateStock(order.getBooks());
 
-        return ResponseEntity.ok(order);
+
+        // Return the success message and the order object
+        response.put("message", "Order successfully created");
+        response.put("order", order);
+        return ResponseEntity.ok(response);
     }
 }

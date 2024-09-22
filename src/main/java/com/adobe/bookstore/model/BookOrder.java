@@ -5,11 +5,12 @@ public class BookOrder {
     private String bookId;
     private int bookQuantity;
 
-    public BookOrder(String id, int quantity){
-        this.bookId = id;
-        this.bookQuantity = quantity;
-    }
+    public BookOrder() {}
 
+    public BookOrder(String bookId, int bookQuantity) {
+        this.bookId = bookId;
+        this.bookQuantity = bookQuantity;
+    }
     public String getBookId() {
         return bookId;
     }

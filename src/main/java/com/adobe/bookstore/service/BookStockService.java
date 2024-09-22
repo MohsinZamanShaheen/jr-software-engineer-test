@@ -21,6 +21,10 @@ public class BookStockService {
     public BookStockService(BookStockRepository stockRepository){
         this.stockRepository = stockRepository;
     }
+
+    /**
+     * Check for sufficient stock of a specific book.
+     */
     public boolean isSufficientStock(String bookId, int expectedQuantity){
         Optional<BookStock> bookStock = stockRepository.findById(bookId);
         if (bookStock.isPresent()){
@@ -28,6 +32,9 @@ public class BookStockService {
         }
         return false;
     }
+    /**
+     * This function is encharged for updating the stock upon an order is made.
+     */
     @Async
     public void updateStock(List<BookOrder> books) {
         for(BookOrder bookOrder : books) {
