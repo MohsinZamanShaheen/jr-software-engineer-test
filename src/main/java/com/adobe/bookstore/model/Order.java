@@ -1,14 +1,21 @@
 package com.adobe.bookstore.model;
 
+import jakarta.persistence.*;
+
 import java.util.List;
 import java.util.UUID;
 
 
-// Class that represents an order composed by a list of books.
+// Entity that represents an order composed by a list of books.
+@Entity
+@Table(name = "orders")
 public class Order {
 
+    @ElementCollection
     private List<BookOrder> books;
     private boolean orderSuccess;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID orderId;
 
     public Order() {

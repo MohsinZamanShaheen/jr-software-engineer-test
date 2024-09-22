@@ -3,12 +3,10 @@ package com.adobe.bookstore.web;
 import com.adobe.bookstore.model.BookOrder;
 import com.adobe.bookstore.model.Order;
 import com.adobe.bookstore.service.BookStockService;
+import com.adobe.bookstore.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +15,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/orders")
 public class BookOrderResource {
+    private final BookStockService bookStockService;
+    private final OrderService orderService;
 
-    private BookStockService bookStockService;
 
     @Autowired
-    public BookOrderResource(BookStockService bookStockService) {
+    public BookOrderResource(BookStockService bookStockService, OrderService orderService) {
         this.bookStockService = bookStockService;
+        this.orderService = orderService;
     }
 
     /**
@@ -47,6 +47,8 @@ public class BookOrderResource {
         }
         // if we have enough quantity then we'll fulfill the order and update the stock;
         order.setOrderSuccess(true);
+
+        orderService.saveOrder(order);
         // Asynchronously update stock to avoid blocking replying to the customer.
         bookStockService.updateStock(order.getBooks());
 
@@ -55,5 +57,14 @@ public class BookOrderResource {
         response.put("message", "Order successfully created");
         response.put("order", order);
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * This endpoint(/orders) is used for the "orders retrieval" feature
+     */
+    @GetMapping
+    public ResponseEntity<List<Order>> getAllOrders() {
+        List<Order> orders = orderService.getAllOrders();
+        return ResponseEntity.ok(orders);
     }
 }

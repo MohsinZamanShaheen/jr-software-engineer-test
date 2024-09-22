@@ -1,5 +1,8 @@
 package com.adobe.bookstore.model;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class BookOrder {
 
     private String bookId;
