@@ -19,7 +19,6 @@ public class Order {
     private UUID orderId;
 
     public Order() {
-        this.orderId = UUID.randomUUID();
     }
 
     public List<BookOrder> getBooks() {
