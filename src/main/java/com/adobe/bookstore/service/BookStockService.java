@@ -33,7 +33,8 @@ public class BookStockService {
         return false;
     }
     /**
-     * This function is encharged for updating the stock upon an order is made.
+     * This function is in-charge for updating the stock upon an order is made. In case of a possible issue, it catches the error
+     * to avoid causing issue to order processing.
      */
     @Async
     public void updateStock(List<BookOrder> books) {

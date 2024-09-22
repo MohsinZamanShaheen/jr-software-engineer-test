@@ -2,6 +2,10 @@ package com.adobe.bookstore.model;
 
 import jakarta.persistence.Embeddable;
 
+/*
+* This Class is marked as Embeddable because its actually part of Order.class and to keep it simple
+*  I didn't want it to make an Entity itself.
+* */
 @Embeddable
 public class BookOrder {
 
